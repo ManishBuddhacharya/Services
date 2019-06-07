@@ -1,16 +1,29 @@
 package com.example.services;
 
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.widget.Toast;
 
+import createChannel.CreateChannel;
+
 public class BroadcastRecieverExample extends BroadcastReceiver {
+    private NotificationManagerCompat notificationManagerCompat;
+    Context context;
+
+    public BroadcastRecieverExample(Context context) {
+        this.context = context;
+    }
 
     @Override
     public void onReceive(Context context, Intent intent) {
         boolean noConnectivity;
+
+        notificationManagerCompat = NotificationManagerCompat.from(context);
 
         if (ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())){
             noConnectivity = intent.getBooleanExtra(
@@ -18,9 +31,32 @@ public class BroadcastRecieverExample extends BroadcastReceiver {
             );
             if (noConnectivity){
                 Toast.makeText(context,"Disconnected", Toast.LENGTH_LONG).show();
+                DisplayNotification();
             }else {
                 Toast.makeText(context,"Connected", Toast.LENGTH_LONG).show();
+                DisplayNotification1();
             }
         }
+    }
+
+    private void DisplayNotification1() {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CreateChannel.CHANNEL_1)
+                .setSmallIcon(R.drawable.manish_icon)
+                .setContentTitle("No Connectivity")
+                .setContentText("No connection. please connect ")
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE);
+
+        notificationManagerCompat.notify(1, builder.build());
+
+    }
+
+    private void DisplayNotification() {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context,CreateChannel.CHANNEL_2)
+                .setSmallIcon(R.drawable.manish_icon)
+                .setContentTitle("Connected")
+                .setContentText("You have been connected to a network")
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE);
+
+        notificationManagerCompat.notify(2, builder.build());
     }
 }
